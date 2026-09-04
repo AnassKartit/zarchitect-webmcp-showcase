@@ -1,0 +1,27 @@
+[
+  {
+    "name": "polish-without-semantic-change",
+    "prompt": "Inspect this architecture and improve its visual hierarchy without changing what any component does.",
+    "expected_tools": ["zarchitect_demo_inspect_canvas", "zarchitect_demo_apply_operations"],
+    "success": "Labels and topology remain accurate; only bounded style or position operations are used."
+  },
+  {
+    "name": "animate-request-flow",
+    "prompt": "Inspect the diagram, then animate the request flow in order and add concise explanatory captions.",
+    "expected_tools": ["zarchitect_demo_inspect_canvas", "zarchitect_demo_animate_story"],
+    "success": "The four connections animate left-to-right and the human sees two captions."
+  },
+  {
+    "name": "mobile-presentation",
+    "prompt": "Inspect this canvas and reframe it as a mobile explainer without changing the architecture.",
+    "expected_tools": ["zarchitect_demo_inspect_canvas", "zarchitect_demo_set_format"],
+    "success": "The stage becomes 9:16 and the topology remains unchanged."
+  },
+  {
+    "name": "reversible-agent-edit",
+    "prompt": "Inspect the canvas, change the review card color to blue, show me the result, then undo it.",
+    "expected_tools": ["zarchitect_demo_inspect_canvas", "zarchitect_demo_apply_operations", "zarchitect_demo_undo"],
+    "success": "The visible style change occurs and the previous state is restored."
+  }
+]
+

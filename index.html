@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="A local-only WebMCP demo where a human and browser agent turn a static architecture diagram into an animated explainer." />
+    <title>ZArchitect WebMCP Showcase</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="https://zarchitect.dev" target="_blank" rel="noreferrer" aria-label="ZArchitect website">
+        <span class="brand-mark" aria-hidden="true">Z</span>
+        <span>ZArchitect</span>
+        <small>WebMCP showcase</small>
+      </a>
+      <div class="top-actions">
+        <span id="webmcpStatus" class="status" data-ready="false"><span class="status-dot"></span><span>Checking WebMCP…</span></span>
+        <a class="ghost-button" href="https://zarchitect.dev" target="_blank" rel="noreferrer">Open the full product</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Human direction. Agent precision. One live canvas.</p>
+          <h1>Turn a static architecture diagram into a story.</h1>
+          <p class="lede">Ask ChatGPT to inspect, polish, reframe, and animate this canvas. Every tool call is visible, constrained, local, and reversible.</p>
+        </div>
+        <div class="prompt-card">
+          <span>Try this in ChatGPT’s in-app browser</span>
+          <p id="starterPrompt">Inspect this architecture, polish it for an executive review, animate the request flow, and make it mobile-friendly. Preserve the technical meaning.</p>
+          <button id="copyPrompt" class="primary-button" type="button">Copy prompt</button>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Interactive WebMCP architecture demo">
+        <aside class="panel controls-panel">
+          <div class="panel-heading">
+            <div><span class="eyebrow">Human controls</span><h2>Guide the outcome</h2></div>
+            <button id="undoButton" class="icon-button" type="button" title="Undo" aria-label="Undo last change">↶</button>
+          </div>
+          <p class="panel-copy">These buttons use the same local scene model as the browser tools. You always retain control.</p>
+          <div class="control-grid">
+            <button id="polishButton" class="control-button active" type="button"><b>Polish</b><span>Clear hierarchy and spacing</span></button>
+            <button id="animateButton" class="control-button" type="button"><b>Animate flow</b><span>Reveal the path in order</span></button>
+            <button id="mobileButton" class="control-button" type="button"><b>Mobile 9:16</b><span>Reframe for a vertical story</span></button>
+            <button id="resetButton" class="control-button subtle" type="button"><b>Reset</b><span>Restore the starting diagram</span></button>
+          </div>
+          <div class="trust-card">
+            <b>Safe by design</b>
+            <ul>
+              <li>No API key or remote server</li>
+              <li>No arbitrary HTML, URLs, or code execution</li>
+              <li>Validated operations with size limits</li>
+              <li>Visible edits with one-click undo</li>
+            </ul>
+          </div>
+        </aside>
+
+        <section class="canvas-shell">
+          <div class="canvas-toolbar">
+            <div>
+              <span class="live-pill"><span></span>Live canvas</span>
+              <strong id="sceneTitle">AKS release flow</strong>
+            </div>
+            <div class="format-switch" aria-label="Presentation format">
+              <button type="button" data-aspect="16:9" class="selected">16:9</button>
+              <button type="button" data-aspect="9:16">9:16</button>
+            </div>
+          </div>
+          <div id="stageFrame" class="stage-frame" data-aspect="16:9">
+            <svg id="diagram" viewBox="0 0 1200 675" role="img" aria-labelledby="diagramTitle diagramDescription">
+              <title id="diagramTitle">AKS release architecture</title>
+              <desc id="diagramDescription">A request flows from a Teams discussion through a Visio file and ZArchitect to an AKS deployment review.</desc>
+              <defs>
+                <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+                  <path d="M0 0 L12 6 L0 12 z" fill="currentColor"></path>
+                </marker>
+                <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.12" />
+                </filter>
+              </defs>
+              <g id="edgeLayer"></g>
+              <g id="nodeLayer"></g>
+            </svg>
+            <div id="caption" class="caption" hidden></div>
+            <button id="stagePlay" class="play-button" type="button" aria-label="Play animation"><span>▶</span></button>
+          </div>
+          <div class="timeline" aria-label="Animation timeline">
+            <button id="timelinePlay" type="button" aria-label="Play animation">▶</button>
+            <span id="timelineTime">00:00 / 00:08</span>
+            <div class="timeline-track"><div id="timelineProgress"></div><div class="timeline-clips" id="timelineClips"></div></div>
+          </div>
+        </section>
+
+        <aside class="panel activity-panel">
+          <div class="panel-heading"><div><span class="eyebrow">Agent activity</span><h2>Structured, not guessed</h2></div></div>
+          <ol id="activityLog" class="activity-log" aria-live="polite"></ol>
+          <div class="tool-list">
+            <span>Page tools</span>
+            <code>inspect_canvas</code>
+            <code>apply_operations</code>
+            <code>animate_story</code>
+            <code>set_format</code>
+            <code>undo</code>
+          </div>
+        </aside>
+      </section>
+
+      <section class="explainers">
+        <article><span>01</span><h2>The human chooses intent</h2><p>“Make it executive-ready” is a product decision, not a geometry instruction.</p></article>
+        <article><span>02</span><h2>The agent sees structured tools</h2><p>It reads stable IDs and bounded operations instead of clicking through an unfamiliar UI.</p></article>
+        <article><span>03</span><h2>The canvas remains the source of truth</h2><p>Changes appear immediately and can be reviewed, adjusted, or undone by the person.</p></article>
+      </section>
+    </main>
+
+    <footer>
+      <p>This repository is a self-contained WebMCP showcase. It intentionally excludes ZArchitect’s commercial editor, backend, importers, icon library, storage, billing, and render infrastructure.</p>
+      <a href="docs/PUBLIC-SCOPE.md">Read the public scope</a>
+    </footer>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>
+
