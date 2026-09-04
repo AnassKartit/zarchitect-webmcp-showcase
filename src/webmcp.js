@@ -30,6 +30,10 @@ const operationSchema = {
 export async function registerWebMcp(model, onEvent = () => {}) {
   const context = document.modelContext;
   if (!context?.registerTool) return { ready: false, tools: [] };
+  let inspected = false;
+  const requireInspection = () => {
+    if (!inspected) throw new Error("Inspect the canvas before using a write tool.");
+  };
   const register = async (definition) => {
     await context.registerTool(definition);
     onEvent({ title: "Tool registered", detail: definition.name });
@@ -41,6 +45,7 @@ export async function registerWebMcp(model, onEvent = () => {}) {
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     annotations: readOnly,
     execute: () => {
+      inspected = true;
       onEvent({ title: "Canvas inspected", detail: "The agent read structured nodes and connections." });
       return json({
         scope: "Local showcase canvas only. This is not the ZArchitect production API.",
@@ -57,6 +62,7 @@ export async function registerWebMcp(model, onEvent = () => {}) {
     inputSchema: { type: "object", properties: { operations: operationSchema }, required: ["operations"], additionalProperties: false },
     annotations: visibleWrite,
     execute: ({ operations }) => {
+      requireInspection();
       const scene = model.applyOperations(operations, "agent");
       onEvent({ title: "Agent updated the canvas", detail: `${operations.length} validated operation${operations.length === 1 ? "" : "s"} applied.` });
       return json({ ok: true, message: "The batch is visible and can be reverted with zarchitect_demo_undo.", scene });
@@ -69,6 +75,7 @@ export async function registerWebMcp(model, onEvent = () => {}) {
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     annotations: visibleWrite,
     execute: () => {
+      requireInspection();
       const scene = model.animate("agent");
       onEvent({ title: "Story animated", detail: "Four connections and two captions now play in sequence." });
       return json({ ok: true, message: "Animation is ready. The human can press Play or undo it.", scene });
@@ -81,6 +88,7 @@ export async function registerWebMcp(model, onEvent = () => {}) {
     inputSchema: { type: "object", properties: { aspect: { type: "string", enum: ["16:9", "9:16"] } }, required: ["aspect"], additionalProperties: false },
     annotations: visibleWrite,
     execute: ({ aspect }) => {
+      requireInspection();
       const scene = model.applyOperations([{ op: "set_stage", aspect }], "agent");
       onEvent({ title: "Presentation reframed", detail: `Stage changed to ${aspect}.` });
       return json({ ok: true, scene });
@@ -93,6 +101,7 @@ export async function registerWebMcp(model, onEvent = () => {}) {
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     annotations: visibleWrite,
     execute: () => {
+      requireInspection();
       const scene = model.undo("agent");
       onEvent({ title: "Agent change undone", detail: "The previous local scene state was restored." });
       return json({ ok: true, scene });
@@ -101,4 +110,3 @@ export async function registerWebMcp(model, onEvent = () => {}) {
 
   return { ready: true, tools: ["inspect_canvas", "apply_operations", "animate_story", "set_format", "undo"] };
 }
-

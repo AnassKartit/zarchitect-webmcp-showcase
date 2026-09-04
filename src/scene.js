@@ -1,6 +1,16 @@
 const STORAGE_KEY = "zarchitect-webmcp-showcase-v1";
 const HEX = /^#[0-9a-f]{6}$/i;
 const MAX_HISTORY = 30;
+const OPERATION_FIELDS = Object.freeze({
+  set_label: new Set(["op", "id", "label", "sub"]),
+  move: new Set(["op", "id", "x", "y"]),
+  style: new Set(["op", "id", "fill", "stroke", "color"]),
+  set_stage: new Set(["op", "aspect"]),
+  animate_edge: new Set(["op", "id", "start", "duration"]),
+  add_caption: new Set(["op", "text", "start", "duration"]),
+  set_duration: new Set(["op", "seconds"]),
+  clear_story: new Set(["op"])
+});
 
 export const DEFAULT_SCENE = Object.freeze({
   name: "AKS release flow",
@@ -42,8 +52,58 @@ const color = (value, name) => {
 };
 
 function normalize(scene) {
-  if (!scene || !Array.isArray(scene.nodes) || !Array.isArray(scene.edges)) return clone(DEFAULT_SCENE);
-  return scene;
+  try {
+    if (!scene || typeof scene !== "object" || Array.isArray(scene)) throw new Error("Invalid stored scene.");
+    if (!Array.isArray(scene.nodes) || scene.nodes.length !== DEFAULT_SCENE.nodes.length) throw new Error("Invalid stored nodes.");
+
+    const storedNodes = new Map();
+    for (const item of scene.nodes) {
+      if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error("Invalid stored node.");
+      const id = text(item.id, 40, "node id");
+      if (storedNodes.has(id)) throw new Error("Duplicate stored node.");
+      storedNodes.set(id, item);
+    }
+
+    const safe = clone(DEFAULT_SCENE);
+    safe.nodes = DEFAULT_SCENE.nodes.map((base) => {
+      const stored = storedNodes.get(base.id);
+      if (!stored) throw new Error("Missing stored node.");
+      return {
+        ...base,
+        label: text(stored.label ?? base.label, 80, "label"),
+        sub: text(stored.sub ?? base.sub, 120, "sub"),
+        x: finite(stored.x ?? base.x, 0, 1100, "x"),
+        y: finite(stored.y ?? base.y, 0, 560, "y"),
+        fill: color(stored.fill ?? base.fill, "fill"),
+        stroke: color(stored.stroke ?? base.stroke, "stroke"),
+        color: color(stored.color ?? base.color, "color")
+      };
+    });
+
+    safe.stage.aspect = ["16:9", "9:16"].includes(scene.stage?.aspect) ? scene.stage.aspect : "16:9";
+    safe.duration = finite(scene.duration ?? safe.duration, 2, 60, "duration");
+
+    const knownEdges = new Set(DEFAULT_SCENE.edges.map((item) => item.id));
+    const storedAnimations = Array.isArray(scene.animations) ? scene.animations.slice(0, knownEdges.size) : [];
+    const seenAnimations = new Set();
+    safe.animations = storedAnimations.map((item) => {
+      const id = text(item?.id, 40, "animation id");
+      if (!knownEdges.has(id) || seenAnimations.has(id)) throw new Error("Invalid stored animation.");
+      seenAnimations.add(id);
+      return { id, start: finite(item.start, 0, 60, "start"), duration: finite(item.duration, .2, 10, "duration") };
+    });
+
+    const storedCaptions = Array.isArray(scene.captions) ? scene.captions.slice(-12) : [];
+    safe.captions = storedCaptions.map((item, index) => ({
+      id: `caption-restored-${index}`,
+      text: text(item?.text, 180, "caption"),
+      start: finite(item?.start, 0, 60, "start"),
+      duration: finite(item?.duration, .5, 20, "duration")
+    }));
+    return safe;
+  } catch {
+    return clone(DEFAULT_SCENE);
+  }
 }
 
 export function createSceneModel() {
@@ -78,6 +138,8 @@ export function createSceneModel() {
       for (const raw of operations) {
         if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("Each operation must be an object.");
         const op = String(raw.op || "");
+        const allowedFields = OPERATION_FIELDS[op];
+        if (allowedFields && Object.keys(raw).some((field) => !allowedFields.has(field))) throw new Error(`Unexpected field for ${op}.`);
         if (op === "set_label") {
           const target = node(text(raw.id, 40, "id"));
           target.label = text(raw.label, 80, "label");

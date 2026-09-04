@@ -29,6 +29,8 @@ The page registers five tools with `document.modelContext.registerTool()`:
 
 Tool annotations distinguish read-only inspection from consequential visible writes. Schemas reject unknown fields, operations are allowlisted and bounded, no arbitrary HTML/SVG/URL execution is accepted, and all edits share the same scene model as the human controls.
 
+Write tools also enforce inspect-before-write, and persisted browser state is treated as untrusted. See the [threat model](docs/THREAT-MODEL.md).
+
 ## Run locally
 
 Requirements: Node.js 20 or newer.
@@ -47,7 +49,7 @@ No dependency installation, account, token, backend, or paid service is required
 npm run check
 ```
 
-The checks validate JavaScript syntax, exact registered tool names, required WebMCP annotations, the public/private boundary, evaluation trajectories, and the absence of backend calls, credential plumbing, and unsafe HTML sinks.
+The checks validate JavaScript syntax, exact registered tool names, required WebMCP annotations, the public/private boundary, evaluation trajectories, poisoned persisted state, inspect-before-write enforcement, and the absence of backend calls, credential plumbing, unsafe HTML sinks, production configuration, source maps, private keys, and production identifiers.
 
 ## Suggested agent test
 

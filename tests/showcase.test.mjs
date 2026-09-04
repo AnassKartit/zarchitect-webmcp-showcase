@@ -68,7 +68,32 @@ test("validates mutations and restores the previous batch", async () => {
   model.undo("human");
   assert.equal(model.get().nodes.find((node) => node.id === "review").label, "2 PM review");
   assert.throws(() => model.applyOperations([{ op: "style", id: "review", fill: "javascript:alert(1)" }], "agent"), /hex color/);
+  assert.throws(() => model.applyOperations([{ op: "style", id: "review", fill: "#ffffff", html: "<script>" }], "agent"), /Unexpected field/);
   assert.throws(() => model.applyOperations([{ op: "unknown" }], "agent"), /Unsupported operation/);
+});
+
+test("rejects poisoned persisted state and restores the fixed public topology", async () => {
+  const storage = new Map([
+    ["zarchitect-webmcp-showcase-v1", JSON.stringify({
+      stage: { aspect: "9:16" },
+      duration: 999,
+      nodes: [{ id: "review", label: "<img src=x onerror=alert(1)>" }],
+      edges: [],
+      animations: [{ id: "missing", start: -10, duration: 999 }],
+      captions: [{ text: "<script>alert(1)</script>", start: 0, duration: 2 }]
+    })]
+  ]);
+  globalThis.localStorage = {
+    getItem: (key) => storage.get(key) ?? null,
+    setItem: (key, value) => storage.set(key, value)
+  };
+  const { createSceneModel } = await import("../src/scene.js?poisoned-storage-test");
+  const scene = createSceneModel().get();
+  assert.equal(scene.nodes.length, 5);
+  assert.equal(scene.nodes.find((node) => node.id === "review").label, "2 PM review");
+  assert.equal(scene.duration, 8);
+  assert.deepEqual(scene.animations, []);
+  assert.deepEqual(scene.captions, []);
 });
 
 test("registers executable tools against a WebMCP-compatible page context", async () => {
@@ -82,6 +107,10 @@ test("registers executable tools against a WebMCP-compatible page context", asyn
   assert.equal(definitions.length, 5);
   const inspect = definitions.find((definition) => definition.name === "zarchitect_demo_inspect_canvas");
   const update = definitions.find((definition) => definition.name === "zarchitect_demo_apply_operations");
+  assert.throws(
+    () => update.execute({ operations: [{ op: "set_label", id: "review", label: "Ready" }] }),
+    /Inspect the canvas/
+  );
   const inspected = await inspect.execute({});
   assert.match(inspected.content[0].text, /Local showcase canvas only/);
   await update.execute({ operations: [{ op: "set_label", id: "review", label: "Ready" }] });

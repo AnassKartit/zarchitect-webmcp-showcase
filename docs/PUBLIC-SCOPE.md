@@ -36,5 +36,9 @@ The live artifact and this repository describe the same standalone showcase. The
 - User and agent text is rendered with `textContent`, never as HTML.
 - The showcase accepts no arbitrary SVG, scripts, URLs, or file uploads.
 - Every mutation is visible on the open canvas and is locally reversible.
+- Browser agents must inspect the scene before a write tool succeeds.
+- Persisted browser state is validated and rebuilt over the fixed public topology before rendering.
 - Local serving uses a restrictive Content Security Policy and related headers.
+- A tracked-file release audit rejects secret-shaped values and production-only artifacts before publication.
 
+For the complete trust-boundary analysis, see [Threat model](THREAT-MODEL.md).
