@@ -1,5 +1,7 @@
 # ZArchitect WebMCP Showcase
 
+[![Public boundary](https://github.com/AnassKartit/zarchitect-webmcp-showcase/actions/workflows/public-boundary.yml/badge.svg)](https://github.com/AnassKartit/zarchitect-webmcp-showcase/actions/workflows/public-boundary.yml)
+
 A self-contained, local-only WebMCP collaboration demo: a human states the outcome, a browser agent inspects a structured architecture canvas, and the canvas updates visibly while the human can review or undo every change.
 
 **Live public demo:** <https://zarchitect-webmcp-demo.pages.dev/>
@@ -7,6 +9,8 @@ A self-contained, local-only WebMCP collaboration demo: a human states the outco
 **Narrated demo video:** <https://github.com/AnassKartit/zarchitect-webmcp-showcase/releases/download/demo-v1/zarchitect-webmcp-demo.mp4>
 
 This is a **standalone showcase**, not the source code for the ZArchitect SaaS. The commercial editor, backend, remote MCP server, authentication, storage, importers, icon catalogs, billing, and rendering infrastructure are deliberately excluded. See [Public showcase scope](docs/PUBLIC-SCOPE.md).
+
+Security and reproducibility are documented in the [threat model](docs/THREAT-MODEL.md), [security policy](SECURITY.md), and [verification evidence](docs/VERIFICATION.md).
 
 ## Why WebMCP fits
 

@@ -1,0 +1,29 @@
+name: Public boundary
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out the standalone showcase
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test and audit the public boundary
+        run: npm run check
+      - name: Build the deployable allowlist
+        run: npm run build:static
+      - name: Verify the static artifact count
+        run: test "$(find dist -type f | wc -l | tr -d ' ')" = "9"
