@@ -2,7 +2,7 @@
 
 A self-contained, local-only WebMCP collaboration demo: a human states the outcome, a browser agent inspects a structured architecture canvas, and the canvas updates visibly while the human can review or undo every change.
 
-**Live public demo:** <https://26fcd794.zarchitect-webmcp-showcase.pages.dev/>
+**Live public demo:** <https://zarchitect-webmcp-demo.pages.dev/>
 
 **Narrated demo video:** <https://github.com/AnassKartit/zarchitect-webmcp-showcase/releases/download/demo-v1/zarchitect-webmcp-demo.mp4>
 
