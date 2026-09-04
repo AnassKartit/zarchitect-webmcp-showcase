@@ -2,6 +2,8 @@
 
 A self-contained, local-only WebMCP collaboration demo: a human states the outcome, a browser agent inspects a structured architecture canvas, and the canvas updates visibly while the human can review or undo every change.
 
+**Live public demo:** <https://26fcd794.zarchitect-webmcp-showcase.pages.dev/>
+
 This is a **standalone showcase**, not the source code for the ZArchitect SaaS. The commercial editor, backend, remote MCP server, authentication, storage, importers, icon catalogs, billing, and rendering infrastructure are deliberately excluded. See [Public showcase scope](docs/PUBLIC-SCOPE.md).
 
 ## Why WebMCP fits
