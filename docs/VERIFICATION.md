@@ -33,6 +33,16 @@ Then open <http://127.0.0.1:4173>, press **Animate flow**, switch to **Mobile 9:
 
 For page-defined tool testing, use ChatGPT’s in-app browser or a WebMCP-enabled Chrome build. A normal browser still supports all visible human controls but reports that the WebMCP client surface is unavailable.
 
+### Native browser evidence
+
+On September 4, 2026, the deployed HTTPS origin was tested in Chrome 152 using an isolated temporary profile with WebMCP testing enabled. The native browser registry reported `WebMCP ready` and exactly five tools. The smoke test proved that a write before inspection fails, then invoked `inspect_canvas`, `animate_story`, `set_format` and `undo` through `document.modelContext.executeTool()`. It observed five nodes, four edges, four animations, a visible 9:16 stage, and restoration to 16:9 after Undo.
+
+With a flagged Chrome instance exposing remote debugging on port 9335 and the live demo open, reproduce the native contract test with:
+
+```bash
+npm run test:webmcp:chrome
+```
+
 ## Demo assets
 
 - [Live public demo](https://zarchitect-webmcp-demo.pages.dev/)
