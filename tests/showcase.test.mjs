@@ -46,6 +46,14 @@ test("documents the public/private boundary and an OSS license", () => {
   assert.match(read("README.md"), /standalone showcase/i);
 });
 
+test("builds deployment output from an explicit static allowlist", () => {
+  const build = read("scripts/build-static.mjs");
+  assert.match(build, /const assets = \[/);
+  assert.match(build, /"src\/webmcp\.js"/);
+  assert.doesNotMatch(build, /cpSync\(root, output/);
+  assert.doesNotMatch(build, /devpost/i);
+});
+
 test("includes evaluation prompts with expected tool trajectories", () => {
   const evaluations = JSON.parse(read("evals.json"));
   assert.ok(evaluations.length >= 4);

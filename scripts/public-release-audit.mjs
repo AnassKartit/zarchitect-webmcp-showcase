@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { readFileSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { basename, extname, join } from "node:path";
 
 const root = new URL("..", import.meta.url).pathname;
-const tracked = execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard"], { cwd: root }).toString("utf8").split("\0").filter(Boolean);
+const tracked = execFileSync("git", ["ls-files", "-z", "--cached", "--others", "--exclude-standard"], { cwd: root })
+  .toString("utf8")
+  .split("\0")
+  .filter((relativePath) => relativePath && existsSync(join(root, relativePath)));
 const forbiddenNames = new Set(["wrangler.toml", "wrangler.json", "wrangler.jsonc", "schema.prisma"]);
 const forbiddenExtensions = new Set([".map", ".pem", ".key", ".p12", ".pfx", ".sqlite", ".db", ".sql"]);
 const forbiddenDirectories = /(^|\/)(migrations?|database|prisma)(\/|$)/i;

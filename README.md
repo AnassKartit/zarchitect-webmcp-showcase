@@ -43,6 +43,14 @@ Open <http://127.0.0.1:4173>. The visual demo works in any modern browser. For a
 
 No dependency installation, account, token, backend, or paid service is required.
 
+For a production static upload, build the explicit public asset allowlist instead of uploading the repository root:
+
+```bash
+npm run build:static
+```
+
+Deploy only the generated `dist/` directory.
+
 ## Test
 
 ```bash
